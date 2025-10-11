@@ -677,4 +677,5 @@ def admin_reject():
         return "An error occurred", 500
 
 if __name__ == '__main__':
-    app.run(debug=True, host="0.0.0.0", port=21488)
+
+    app.run(debug=True, host="0.0.0.0", port=5000)
