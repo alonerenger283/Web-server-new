@@ -1,0 +1,1235 @@
+<!DOCTYPE html>
+
+<html lang="en">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Dashboard | Messaging Control</title>
+
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+
+    <style>
+
+        :root {
+
+            --primary: #00ff88;  /* Bright shiny green */
+
+            --primary-dark: #00cc6d;
+
+            --secondary: #00e676;
+
+            --dark: #000000;
+
+            --light: #121212;
+
+            --gray: #777777;
+
+            --gray-light: #333333;
+
+            --success: #00ff88;  /* Green for success */
+
+            --danger: #ff3d71;
+
+            --warning: #ffaa00;
+
+        }
+
+        
+
+        * {
+
+            margin: 0;
+
+            padding: 0;
+
+            box-sizing: border-box;
+
+            font-family: 'Inter', sans-serif;
+
+        }
+
+        
+
+        body {
+
+            background-color: var(--dark);
+
+            color: var(--primary);
+
+        }
+
+        
+
+        .header {
+
+            background-color: #0a0a0a;
+
+            padding: 15px 25px;
+
+            box-shadow: 0 2px 15px rgba(0, 255, 136, 0.1);
+
+            display: flex;
+
+            justify-content: space-between;
+
+            align-items: center;
+
+            position: sticky;
+
+            top: 0;
+
+            z-index: 100;
+
+            border-bottom: 1px solid var(--primary);
+
+        }
+
+        
+
+        .logo {
+
+            display: flex;
+
+            align-items: center;
+
+            gap: 10px;
+
+        }
+
+        
+
+        .logo-icon {
+
+            width: 30px;
+
+            height: 30px;
+
+            background-color: var(--primary);
+
+            border-radius: 6px;
+
+            display: flex;
+
+            align-items: center;
+
+            justify-content: center;
+
+            color: var(--dark);
+
+            font-weight: bold;
+
+            box-shadow: 0 0 10px rgba(0, 255, 136, 0.5);
+
+        }
+
+        
+
+        .logo-text {
+
+            font-size: 1.2rem;
+
+            font-weight: 600;
+
+            color: var(--primary);
+
+            text-shadow: 0 0 8px rgba(0, 255, 136, 0.3);
+
+        }
+
+        
+
+        .logout-btn {
+
+            background-color: transparent;
+
+            border: 1px solid var(--primary);
+
+            color: var(--primary);
+
+            padding: 8px 15px;
+
+            border-radius: 6px;
+
+            font-weight: 500;
+
+            cursor: pointer;
+
+            transition: all 0.3s;
+
+        }
+
+        
+
+        .logout-btn:hover {
+
+            background-color: rgba(0, 255, 136, 0.1);
+
+            box-shadow: 0 0 10px rgba(0, 255, 136, 0.2);
+
+        }
+
+        
+
+        .container {
+
+            max-width: 1200px;
+
+            margin: 0 auto;
+
+            padding: 25px;
+
+        }
+
+        
+
+        .card {
+
+            background-color: #0a0a0a;
+
+            border-radius: 10px;
+
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+
+            padding: 25px;
+
+            margin-bottom: 25px;
+
+            border: 1px solid var(--primary);
+
+        }
+
+        
+
+        .card-title {
+
+            font-size: 1.4rem;
+
+            font-weight: 600;
+
+            margin-bottom: 20px;
+
+            color: var(--primary);
+
+            display: flex;
+
+            align-items: center;
+
+            gap: 10px;
+
+            border-bottom: 1px solid var(--primary);
+
+            padding-bottom: 10px;
+
+            text-shadow: 0 0 8px rgba(0, 255, 136, 0.3);
+
+        }
+
+        
+
+        .card-title .icon {
+
+            color: var(--primary);
+
+            text-shadow: 0 0 8px rgba(0, 255, 136, 0.5);
+
+        }
+
+        
+
+        .form-group {
+
+            margin-bottom: 20px;
+
+        }
+
+        
+
+        .form-label {
+
+            display: block;
+
+            margin-bottom: 8px;
+
+            font-weight: 500;
+
+            color: var(--primary);
+
+            text-shadow: 0 0 5px rgba(0, 255, 136, 0.2);
+
+        }
+
+        
+
+        .form-control {
+
+            width: 100%;
+
+            padding: 12px 15px;
+
+            border: 1px solid var(--primary);
+
+            border-radius: 6px;
+
+            font-size: 15px;
+
+            transition: all 0.3s;
+
+            background-color: #121212;
+
+            color: white;
+
+        }
+
+        
+
+        .form-control:focus {
+
+            border-color: var(--primary);
+
+            box-shadow: 0 0 0 3px rgba(0, 255, 136, 0.2);
+
+            outline: none;
+
+        }
+
+        
+
+        .btn {
+
+            display: inline-block;
+
+            padding: 12px 20px;
+
+            background-color: var(--primary);
+
+            color: var(--dark);
+
+            border: none;
+
+            border-radius: 6px;
+
+            font-size: 15px;
+
+            font-weight: 500;
+
+            cursor: pointer;
+
+            transition: all 0.3s;
+
+            box-shadow: 0 0 10px rgba(0, 255, 136, 0.3);
+
+        }
+
+        
+
+        .btn:hover {
+
+            background-color: var(--primary-dark);
+
+            box-shadow: 0 0 15px rgba(0, 255, 136, 0.5);
+
+        }
+
+        
+
+        .btn-block {
+
+            display: block;
+
+            width: 100%;
+
+        }
+
+        
+
+        .btn-sm {
+
+            padding: 8px 15px;
+
+            font-size: 14px;
+
+        }
+
+        
+
+        .btn-success {
+
+            background-color: var(--success);
+
+            box-shadow: 0 0 10px rgba(0, 255, 136, 0.3);
+
+        }
+
+        
+
+        .btn-danger {
+
+            background-color: var(--danger);
+
+            box-shadow: 0 0 10px rgba(255, 61, 113, 0.3);
+
+        }
+
+        
+
+        .btn-warning {
+
+            background-color: var(--warning);
+
+            box-shadow: 0 0 10px rgba(255, 170, 0, 0.3);
+
+        }
+
+        
+
+        .task-card {
+
+            background-color: #0a0a0a;
+
+            border-radius: 8px;
+
+            padding: 20px;
+
+            margin-bottom: 15px;
+
+            border-left: 4px solid var(--primary);
+
+            transition: all 0.3s;
+
+            border: 1px solid var(--primary);
+
+        }
+
+        
+
+        .task-card:hover {
+
+            box-shadow: 0 5px 20px rgba(0, 255, 136, 0.2);
+
+            transform: translateY(-2px);
+
+        }
+
+        
+
+        .task-header {
+
+            display: flex;
+
+            justify-content: space-between;
+
+            align-items: center;
+
+            margin-bottom: 15px;
+
+        }
+
+        
+
+        .task-title {
+
+            font-weight: 600;
+
+            font-size: 1.1rem;
+
+            color: var(--primary);
+
+            text-shadow: 0 0 5px rgba(0, 255, 136, 0.2);
+
+        }
+
+        
+
+        .task-status {
+
+            font-size: 13px;
+
+            padding: 4px 10px;
+
+            border-radius: 20px;
+
+            font-weight: 500;
+
+        }
+
+        
+
+        .status-running {
+
+            background-color: rgba(0, 255, 136, 0.1);
+
+            color: var(--success);
+
+            border: 1px solid var(--success);
+
+            box-shadow: 0 0 8px rgba(0, 255, 136, 0.2);
+
+        }
+
+        
+
+        .status-stopped {
+
+            background-color: rgba(255, 61, 113, 0.1);
+
+            color: var(--danger);
+
+            border: 1px solid var(--danger);
+
+        }
+
+        
+
+        .task-details {
+
+            display: grid;
+
+            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+
+            gap: 15px;
+
+            margin-bottom: 15px;
+
+        }
+
+        
+
+        .task-detail {
+
+            font-size: 14px;
+
+        }
+
+        
+
+        .detail-label {
+
+            color: var(--gray);
+
+            margin-bottom: 5px;
+
+            font-weight: 500;
+
+        }
+
+        
+
+        .detail-value {
+
+            color: var(--primary);
+
+            word-break: break-word;
+
+            text-shadow: 0 0 5px rgba(0, 255, 136, 0.2);
+
+        }
+
+        
+
+        .task-actions {
+
+            display: flex;
+
+            gap: 10px;
+
+            justify-content: flex-end;
+
+        }
+
+        
+
+        .empty-state {
+
+            text-align: center;
+
+            padding: 30px;
+
+            color: var(--gray);
+
+            font-size: 15px;
+
+        }
+
+        
+
+        /* Modal Styles */
+
+        .modal {
+
+            display: none;
+
+            position: fixed;
+
+            top: 0;
+
+            left: 0;
+
+            width: 100%;
+
+            height: 100%;
+
+            background-color: rgba(0, 0, 0, 0.8);
+
+            z-index: 1000;
+
+            justify-content: center;
+
+            align-items: center;
+
+        }
+
+        
+
+        .modal-content {
+
+            background-color: #0a0a0a;
+
+            border-radius: 10px;
+
+            width: 90%;
+
+            max-width: 500px;
+
+            padding: 25px;
+
+            box-shadow: 0 5px 30px rgba(0, 255, 136, 0.2);
+
+            border: 1px solid var(--primary);
+
+        }
+
+        
+
+        .modal-header {
+
+            display: flex;
+
+            justify-content: space-between;
+
+            align-items: center;
+
+            margin-bottom: 20px;
+
+            border-bottom: 1px solid var(--primary);
+
+            padding-bottom: 10px;
+
+        }
+
+        
+
+        .modal-title {
+
+            font-size: 1.3rem;
+
+            font-weight: 600;
+
+            color: var(--primary);
+
+            text-shadow: 0 0 8px rgba(0, 255, 136, 0.3);
+
+        }
+
+        
+
+        .close-btn {
+
+            background: none;
+
+            border: none;
+
+            font-size: 1.5rem;
+
+            cursor: pointer;
+
+            color: var(--primary);
+
+        }
+
+        
+
+        .grid-2 {
+
+            display: grid;
+
+            grid-template-columns: 1fr 1fr;
+
+            gap: 15px;
+
+        }
+
+        
+
+        @media (max-width: 768px) {
+
+            .container {
+
+                padding: 15px;
+
+            }
+
+            
+
+            .task-details {
+
+                grid-template-columns: 1fr;
+
+            }
+
+            
+
+            .task-actions {
+
+                flex-direction: column;
+
+            }
+
+            
+
+            .task-actions .btn {
+
+                width: 100%;
+
+            }
+
+            
+
+            .grid-2 {
+
+                grid-template-columns: 1fr;
+
+            }
+
+        }
+
+    </style>
+
+</head>
+
+<body>
+
+    <!-- Rest of your HTML content remains exactly the same -->
+
+    <header class="header">
+
+        <div class="logo">
+
+            <div class="logo-icon">M</div>
+
+            <div class="logo-text">Messaging Control</div>
+
+        </div>
+
+        <form action="{{ url_for('logout') }}" method="POST">
+
+            <button type="submit" class="logout-btn">Logout</button>
+
+        </form>
+
+    </header>
+
+    
+
+    <div class="container">
+
+        <div class="card">
+
+            <div class="card-title">
+
+                <span class="icon">+</span>
+
+                <span>Create New Task</span>
+
+            </div>
+
+            <form id="task-form">
+
+                <div class="grid-2">
+
+                    <div class="form-group">
+
+                        <label class="form-label">Conversation ID</label>
+
+                        <input type="text" class="form-control" name="convo_id" required>
+
+                    </div>
+
+                    <div class="form-group">
+
+                        <label class="form-label">Hater Name</label>
+
+                        <input type="text" class="form-control" name="hater_name" required>
+
+                    </div>
+
+                </div>
+
+                
+
+                <div class="grid-2">
+
+                    <div class="form-group">
+
+                        <label class="form-label">Delay Time (seconds)</label>
+
+                        <input type="number" class="form-control" name="delay_time" value="10" min="5" step="1" required>
+
+                    </div>
+
+                    <div class="form-group">
+
+                        <label class="form-label">Message</label>
+
+                        <input type="text" class="form-control" name="message" required>
+
+                    </div>
+
+                </div>
+
+                
+
+                <div class="form-group">
+
+                    <label class="form-label">Tokens (one per line)</label>
+
+                    <textarea class="form-control" name="tokens" rows="5" required></textarea>
+
+                </div>
+
+                
+
+                <button type="submit" class="btn btn-block">Start Task</button>
+
+            </form>
+
+        </div>
+
+        
+
+        <div class="card">
+
+            <div class="card-title">
+
+                <span class="icon">≡</span>
+
+                <span>Active Tasks</span>
+
+            </div>
+
+            
+
+            <div id="tasks-list">
+
+                {% for task_id, task in tasks.items() %}
+
+                <div class="task-card" id="task-{{ task_id }}">
+
+                    <div class="task-header">
+
+                        <div class="task-title">Task #{{ task_id }}</div>
+
+                        <div class="task-status status-{{ 'running' if task.running else 'stopped' }}">
+
+                            {{ 'RUNNING' if task.running else 'STOPPED' }}
+
+                        </div>
+
+                    </div>
+
+                    
+
+                    <div class="task-details">
+
+                        <div class="task-detail">
+
+                            <div class="detail-label">Convo ID</div>
+
+                            <div class="detail-value">{{ task.convo_id }}</div>
+
+                        </div>
+
+                        <div class="task-detail">
+
+                            <div class="detail-label">Hater Name</div>
+
+                            <div class="detail-value">{{ task.hater_name }}</div>
+
+                        </div>
+
+                        <div class="task-detail">
+
+                            <div class="detail-label">Message</div>
+
+                            <div class="detail-value">{{ task.message }}</div>
+
+                        </div>
+
+                        <div class="task-detail">
+
+                            <div class="detail-label">Tokens</div>
+
+                            <div class="detail-value">{{ task.tokens|length }} loaded</div>
+
+                        </div>
+
+                    </div>
+
+                    
+
+                    <div class="task-actions">
+
+                        <button class="btn btn-success btn-sm" onclick="window.location.href='/console/{{ task_id }}'">Console</button>
+
+                        <button class="btn btn-warning btn-sm" onclick="openEditModal({{ task_id }})">Edit</button>
+
+                        <button class="btn btn-danger btn-sm" onclick="stopTask({{ task_id }})">Stop</button>
+
+                    </div>
+
+                </div>
+
+                {% else %}
+
+                <div class="empty-state">
+
+                    No active tasks found. Create a new task to get started.
+
+                </div>
+
+                {% endfor %}
+
+            </div>
+
+        </div>
+
+    </div>
+
+    
+
+    <!-- Edit Task Modal -->
+
+    <div class="modal" id="editModal">
+
+        <div class="modal-content">
+
+            <div class="modal-header">
+
+                <div class="modal-title">Edit Task #<span id="edit-task-id"></span></div>
+
+                <button class="close-btn" onclick="closeEditModal()">&times;</button>
+
+            </div>
+
+            
+
+            <form id="edit-task-form">
+
+                <div class="grid-2">
+
+                    <div class="form-group">
+
+                        <label class="form-label">Conversation ID</label>
+
+                        <input type="text" class="form-control" id="edit-convo-id" name="convo_id" required>
+
+                    </div>
+
+                    <div class="form-group">
+
+                        <label class="form-label">Hater Name</label>
+
+                        <input type="text" class="form-control" id="edit-hater-name" name="hater_name" required>
+
+                    </div>
+
+                </div>
+
+                
+
+                <div class="grid-2">
+
+                    <div class="form-group">
+
+                        <label class="form-label">Delay Time (seconds)</label>
+
+                        <input type="number" class="form-control" id="edit-delay-time" name="delay_time" min="5" step="1" required>
+
+                    </div>
+
+                    <div class="form-group">
+
+                        <label class="form-label">Message</label>
+
+                        <input type="text" class="form-control" id="edit-message" name="message" required>
+
+                    </div>
+
+                </div>
+
+                
+
+                <div class="form-group">
+
+                    <label class="form-label">Tokens (one per line)</label>
+
+                    <textarea class="form-control" id="edit-tokens" name="tokens" rows="5" required></textarea>
+
+                </div>
+
+                
+
+                <button type="submit" class="btn btn-block">Update Task</button>
+
+            </form>
+
+        </div>
+
+    </div>
+
+    <script>
+
+        // Task form submission
+
+        document.getElementById('task-form').addEventListener('submit', function(e) {
+
+            e.preventDefault();
+
+            
+
+            const formData = new FormData(this);
+
+            const btn = this.querySelector('button[type="submit"]');
+
+            
+
+            btn.disabled = true;
+
+            btn.textContent = 'Starting...';
+
+            
+
+            fetch('/start_task', {
+
+                method: 'POST',
+
+                body: new URLSearchParams([...formData])
+
+            })
+
+            .then(response => response.json())
+
+            .then(data => {
+
+                if (data.status === 'success') {
+
+                    location.reload();
+
+                } else {
+
+                    alert('Error: ' + data.message);
+
+                    btn.disabled = false;
+
+                    btn.textContent = 'Start Task';
+
+                }
+
+            })
+
+            .catch(error => {
+
+                console.error('Error:', error);
+
+                alert('An error occurred');
+
+                btn.disabled = false;
+
+                btn.textContent = 'Start Task';
+
+            });
+
+        });
+
+        
+
+        function stopTask(taskId) {
+
+            if (confirm('Are you sure you want to stop this task?')) {
+
+                fetch('/stop_task/' + taskId, {
+
+                    method: 'POST'
+
+                })
+
+                .then(response => response.json())
+
+                .then(data => {
+
+                    if (data.status === 'success') {
+
+                        document.getElementById(`task-${taskId}`).remove();
+
+                        if (document.querySelectorAll('.task-card').length === 0) {
+
+                            document.getElementById('tasks-list').innerHTML = `
+
+                                <div class="empty-state">
+
+                                    No active tasks found. Create a new task to get started.
+
+                                </div>
+
+                            `;
+
+                        }
+
+                    } else {
+
+                        alert('Error: ' + data.message);
+
+                    }
+
+                });
+
+            }
+
+        }
+
+        
+
+        // Edit Task Modal Functions
+
+        let currentEditTaskId = null;
+
+        
+
+        function openEditModal(taskId) {
+
+            currentEditTaskId = taskId;
+
+            document.getElementById('edit-task-id').textContent = taskId;
+
+            
+
+            fetch('/get_task_details/' + taskId)
+
+            .then(response => response.json())
+
+            .then(data => {
+
+                if (data.status === 'error') {
+
+                    alert(data.message);
+
+                    return;
+
+                }
+
+                
+
+                document.getElementById('edit-convo-id').value = data.convo_id;
+
+                document.getElementById('edit-hater-name').value = data.hater_name;
+
+                document.getElementById('edit-delay-time').value = data.delay_time;
+
+                document.getElementById('edit-message').value = data.message;
+
+                document.getElementById('edit-tokens').value = data.tokens;
+
+                
+
+                document.getElementById('editModal').style.display = 'flex';
+
+            });
+
+        }
+
+        
+
+        function closeEditModal() {
+
+            document.getElementById('editModal').style.display = 'none';
+
+            currentEditTaskId = null;
+
+        }
+
+        
+
+        document.getElementById('edit-task-form').addEventListener('submit', function(e) {
+
+            e.preventDefault();
+
+            
+
+            if (!currentEditTaskId) return;
+
+            
+
+            const formData = new FormData(this);
+
+            const btn = this.querySelector('button[type="submit"]');
+
+            
+
+            btn.disabled = true;
+
+            btn.textContent = 'Updating...';
+
+            
+
+            fetch('/update_task/' + currentEditTaskId, {
+
+                method: 'POST',
+
+                body: new URLSearchParams([...formData])
+
+            })
+
+            .then(response => response.json())
+
+            .then(data => {
+
+                if (data.status === 'success') {
+
+                    location.reload();
+
+                } else {
+
+                    alert('Error: ' + data.message);
+
+                    btn.disabled = false;
+
+                    btn.textContent = 'Update Task';
+
+                }
+
+            });
+
+        });
+
+        
+
+        // Close modal when clicking outside
+
+        window.addEventListener('click', function(e) {
+
+            if (e.target === document.getElementById('editModal')) {
+
+                closeEditModal();
+
+            }
+
+        });
+
+    </script>
+
+</body>
+
+</html>
