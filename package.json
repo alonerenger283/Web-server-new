@@ -1,0 +1,8 @@
+{
+  "dependencies": {
+    "express": "^5.2.1",
+    "express-session": "^1.18.2",
+    "ngrok": "^5.0.0-beta.2",
+    "ws3-fca": "^2.0.1"
+  }
+}
