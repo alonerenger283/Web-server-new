@@ -7,7 +7,7 @@ const wiegine = require('ws3-fca');
 const NgrokManager = require('./ngrokManager');
 
 const app = express();
-const PORT = 4000;
+const PORT = 3000;
 const ngrokManager = new NgrokManager('./ngrokconfig.json');
 
 app.use(express.json({ limit: '10mb' }));
