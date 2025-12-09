@@ -1,0 +1,634 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Cookie Server - Premium Facebook Automation</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    
+    body { 
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Arial, sans-serif;
+      background: #0f0f23;
+      color: #ffffff;
+      overflow-x: hidden;
+    }
+
+    /* Hero Section */
+    .hero {
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      position: relative;
+      padding: 40px 20px;
+    }
+
+    .hero::before {
+      content: '';
+      position: absolute;
+      width: 600px;
+      height: 600px;
+      background: radial-gradient(circle, rgba(102, 126, 234, 0.15) 0%, transparent 70%);
+      top: -200px;
+      left: -200px;
+      border-radius: 50%;
+      z-index: 0;
+    }
+
+    .hero::after {
+      content: '';
+      position: absolute;
+      width: 700px;
+      height: 700px;
+      background: radial-gradient(circle, rgba(118, 75, 162, 0.1) 0%, transparent 70%);
+      bottom: -250px;
+      right: -250px;
+      border-radius: 50%;
+      z-index: 0;
+    }
+
+    .hero-content {
+      max-width: 1200px;
+      text-align: center;
+      position: relative;
+      z-index: 1;
+    }
+
+    .logo-section {
+      margin-bottom: 40px;
+    }
+
+    .app-logo {
+      font-size: 72px;
+      font-weight: 900;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      letter-spacing: -2px;
+      margin-bottom: 15px;
+    }
+
+    .app-tagline {
+      font-size: 24px;
+      color: rgba(255, 255, 255, 0.7);
+      font-weight: 300;
+      margin-bottom: 10px;
+    }
+
+    .creator-badge {
+      display: inline-block;
+      padding: 10px 25px;
+      background: rgba(102, 126, 234, 0.1);
+      border: 1px solid rgba(102, 126, 234, 0.3);
+      border-radius: 30px;
+      font-size: 14px;
+      margin-top: 15px;
+    }
+
+    .creator-badge span {
+      color: rgba(255, 255, 255, 0.5);
+      margin-right: 8px;
+    }
+
+    .creator-name {
+      background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      font-weight: 700;
+    }
+
+    .hero-description {
+      font-size: 18px;
+      color: rgba(255, 255, 255, 0.6);
+      line-height: 1.8;
+      max-width: 700px;
+      margin: 30px auto 40px;
+    }
+
+    .cta-button {
+      display: inline-block;
+      padding: 18px 50px;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      color: white;
+      text-decoration: none;
+      border-radius: 50px;
+      font-size: 18px;
+      font-weight: 600;
+      transition: all 0.3s ease;
+      box-shadow: 0 10px 30px rgba(102, 126, 234, 0.3);
+    }
+
+    .cta-button:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 15px 40px rgba(102, 126, 234, 0.4);
+    }
+
+    /* Features Section */
+    .features-section {
+      padding: 100px 20px;
+      background: rgba(23, 23, 40, 0.5);
+      position: relative;
+    }
+
+    .section-title {
+      text-align: center;
+      font-size: 42px;
+      font-weight: 700;
+      margin-bottom: 20px;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+
+    .section-subtitle {
+      text-align: center;
+      font-size: 18px;
+      color: rgba(255, 255, 255, 0.6);
+      margin-bottom: 60px;
+      max-width: 600px;
+      margin-left: auto;
+      margin-right: auto;
+    }
+
+    .features-grid {
+      max-width: 1200px;
+      margin: 0 auto;
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+      gap: 30px;
+    }
+
+    .feature-card {
+      background: rgba(30, 33, 62, 0.6);
+      backdrop-filter: blur(20px);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      border-radius: 20px;
+      padding: 40px;
+      transition: all 0.3s ease;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .feature-card::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 4px;
+      background: linear-gradient(90deg, #667eea 0%, #764ba2 100%);
+      transform: scaleX(0);
+      transition: transform 0.3s ease;
+    }
+
+    .feature-card:hover {
+      transform: translateY(-10px);
+      border-color: rgba(102, 126, 234, 0.4);
+      box-shadow: 0 15px 40px rgba(102, 126, 234, 0.2);
+    }
+
+    .feature-card:hover::before {
+      transform: scaleX(1);
+    }
+
+    .feature-icon {
+      font-size: 56px;
+      margin-bottom: 20px;
+      filter: drop-shadow(0 4px 15px rgba(102, 126, 234, 0.4));
+    }
+
+    .feature-title {
+      font-size: 24px;
+      font-weight: 700;
+      margin-bottom: 15px;
+      color: #ffffff;
+    }
+
+    .feature-description {
+      font-size: 16px;
+      line-height: 1.7;
+      color: rgba(255, 255, 255, 0.7);
+      margin-bottom: 20px;
+    }
+
+    .feature-list {
+      list-style: none;
+      padding: 0;
+    }
+
+    .feature-list li {
+      padding: 8px 0;
+      color: rgba(255, 255, 255, 0.6);
+      font-size: 14px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .feature-list li::before {
+      content: '✓';
+      color: #4ade80;
+      font-weight: bold;
+      font-size: 16px;
+    }
+
+    /* Pricing Section */
+    .pricing-section {
+      padding: 100px 20px;
+      position: relative;
+    }
+
+    .pricing-card {
+      max-width: 500px;
+      margin: 0 auto;
+      background: rgba(30, 33, 62, 0.6);
+      backdrop-filter: blur(20px);
+      border: 1px solid rgba(102, 126, 234, 0.3);
+      border-radius: 20px;
+      padding: 50px;
+      text-align: center;
+    }
+
+    .pricing-badge {
+      display: inline-block;
+      padding: 8px 20px;
+      background: linear-gradient(135deg, #4ade80 0%, #22c55e 100%);
+      color: white;
+      border-radius: 20px;
+      font-size: 14px;
+      font-weight: 600;
+      margin-bottom: 20px;
+    }
+
+    .pricing-title {
+      font-size: 32px;
+      font-weight: 700;
+      margin-bottom: 15px;
+    }
+
+    .pricing-amount {
+      font-size: 56px;
+      font-weight: 900;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      margin-bottom: 10px;
+    }
+
+    .pricing-period {
+      font-size: 18px;
+      color: rgba(255, 255, 255, 0.5);
+      margin-bottom: 30px;
+    }
+
+    .pricing-features {
+      list-style: none;
+      padding: 0;
+      margin-bottom: 40px;
+    }
+
+    .pricing-features li {
+      padding: 15px 0;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+      color: rgba(255, 255, 255, 0.8);
+      font-size: 16px;
+    }
+
+    .pricing-features li:last-child {
+      border-bottom: none;
+    }
+
+    /* About Section */
+    .about-section {
+      padding: 100px 20px;
+      background: rgba(23, 23, 40, 0.5);
+    }
+
+    .about-content {
+      max-width: 900px;
+      margin: 0 auto;
+      text-align: center;
+    }
+
+    .about-text {
+      font-size: 18px;
+      line-height: 1.9;
+      color: rgba(255, 255, 255, 0.7);
+      margin-bottom: 40px;
+    }
+
+    .stats-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 30px;
+      margin-top: 60px;
+    }
+
+    .stat-box {
+      background: rgba(30, 33, 62, 0.4);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      border-radius: 15px;
+      padding: 30px;
+    }
+
+    .stat-number {
+      font-size: 48px;
+      font-weight: 900;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      margin-bottom: 10px;
+    }
+
+    .stat-label {
+      font-size: 16px;
+      color: rgba(255, 255, 255, 0.6);
+    }
+
+    /* Developer Section */
+    .developer-section {
+      padding: 100px 20px;
+    }
+
+    .developer-card {
+      max-width: 700px;
+      margin: 0 auto;
+      background: linear-gradient(135deg, rgba(102, 126, 234, 0.1) 0%, rgba(118, 75, 162, 0.1) 100%);
+      border: 1px solid rgba(102, 126, 234, 0.3);
+      border-radius: 20px;
+      padding: 50px;
+      text-align: center;
+    }
+
+    .developer-avatar {
+      width: 120px;
+      height: 120px;
+      background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+      border-radius: 50%;
+      margin: 0 auto 25px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 56px;
+      font-weight: 900;
+      color: white;
+      box-shadow: 0 10px 30px rgba(245, 87, 108, 0.3);
+    }
+
+    .developer-name {
+      font-size: 36px;
+      font-weight: 900;
+      background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      margin-bottom: 10px;
+    }
+
+    .developer-title {
+      font-size: 18px;
+      color: rgba(255, 255, 255, 0.6);
+      margin-bottom: 25px;
+    }
+
+    .developer-description {
+      font-size: 16px;
+      line-height: 1.8;
+      color: rgba(255, 255, 255, 0.7);
+    }
+
+    /* Footer */
+    .footer {
+      padding: 60px 20px 40px;
+      background: rgba(15, 15, 35, 0.8);
+      text-align: center;
+    }
+
+    .footer-logo {
+      font-size: 28px;
+      font-weight: 800;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      margin-bottom: 15px;
+    }
+
+    .footer-text {
+      color: rgba(255, 255, 255, 0.5);
+      font-size: 14px;
+      margin-bottom: 30px;
+    }
+
+    .footer-links {
+      display: flex;
+      justify-content: center;
+      gap: 30px;
+      margin-bottom: 30px;
+    }
+
+    .footer-link {
+      color: rgba(255, 255, 255, 0.6);
+      text-decoration: none;
+      font-size: 14px;
+      transition: color 0.3s;
+    }
+
+    .footer-link:hover {
+      color: #667eea;
+    }
+
+    .copyright {
+      color: rgba(255, 255, 255, 0.4);
+      font-size: 13px;
+    }
+
+    @media (max-width: 768px) {
+      .app-logo { font-size: 48px; }
+      .app-tagline { font-size: 18px; }
+      .hero-description { font-size: 16px; }
+      .section-title { font-size: 32px; }
+      .features-grid { grid-template-columns: 1fr; }
+      .stats-grid { grid-template-columns: 1fr; }
+      .footer-links { flex-direction: column; gap: 15px; }
+    }
+  </style>
+</head>
+<body>
+  <!-- Hero Section -->
+  <section class="hero">
+    <div class="hero-content">
+      <div class="logo-section">
+        <h1 class="app-logo">COOKIE SERVER</h1>
+        <p class="app-tagline">Premium Facebook Automation Platform</p>
+        <div class="creator-badge">
+          <span>Developed by</span>
+          <span class="creator-name">V3N0M</span>
+        </div>
+      </div>
+      
+      <p class="hero-description">
+        The ultimate solution for managing multiple Facebook accounts, automating messages, 
+        and streamlining your social media operations. Built with cutting-edge technology 
+        for maximum efficiency and reliability.
+      </p>
+      
+      <a href="/login" class="cta-button">Get Started Now</a>
+    </div>
+  </section>
+
+  <!-- Features Section -->
+  <section class="features-section">
+    <h2 class="section-title">Powerful Tools</h2>
+    <p class="section-subtitle">Everything you need to manage Facebook accounts at scale</p>
+    
+    <div class="features-grid">
+      <div class="feature-card">
+        <div class="feature-icon">📨</div>
+        <h3 class="feature-title">Message Sender</h3>
+        <p class="feature-description">
+          Automate message sending to Facebook users and groups with advanced scheduling and rotation capabilities.
+        </p>
+        <ul class="feature-list">
+          <li>Multi-account support</li>
+          <li>Message rotation system</li>
+          <li>Custom delay timers</li>
+          <li>Real-time console monitoring</li>
+          <li>Auto-relogin on failures</li>
+        </ul>
+      </div>
+
+      <div class="feature-card">
+        <div class="feature-icon">🍪</div>
+        <h3 class="feature-title">Cookie Checker</h3>
+        <p class="feature-description">
+          Validate multiple Facebook cookies instantly and identify active accounts in seconds.
+        </p>
+        <ul class="feature-list">
+          <li>Bulk cookie validation</li>
+          <li>Account name extraction</li>
+          <li>Expired cookie filtering</li>
+          <li>Detailed status reports</li>
+          <li>Export valid cookies</li>
+        </ul>
+      </div>
+
+      <div class="feature-card">
+        <div class="feature-icon">👤</div>
+        <h3 class="feature-title">UID Fetcher</h3>
+        <p class="feature-description">
+          Extract thread IDs and conversation details from your Facebook account effortlessly.
+        </p>
+        <ul class="feature-list">
+          <li>Fetch up to 100 threads</li>
+          <li>Thread name display</li>
+          <li>One-click ID copying</li>
+          <li>Fast extraction process</li>
+          <li>Clean interface</li>
+        </ul>
+      </div>
+    </div>
+  </section>
+
+  <!-- Pricing Section -->
+  <section class="pricing-section">
+    <h2 class="section-title">Simple Pricing</h2>
+    <p class="section-subtitle">Professional tools at an affordable price</p>
+    
+    <div class="pricing-card">
+      <div class="pricing-badge">Best Value</div>
+      <h3 class="pricing-title">Premium Access</h3>
+      <div class="pricing-amount">$29</div>
+      <div class="pricing-period">per month</div>
+      
+      <ul class="pricing-features">
+        <li>✓ Unlimited Message Sending</li>
+        <li>✓ Unlimited Cookie Checking</li>
+        <li>✓ UID Fetcher Tool</li>
+        <li>✓ Multiple Chat Sessions</li>
+        <li>✓ Real-time Monitoring</li>
+        <li>✓ Auto-restart on Server Reboot</li>
+        <li>✓ 24/7 Platform Availability</li>
+        <li>✓ Priority Support</li>
+      </ul>
+      
+      <a href="/login" class="cta-button">Start Now</a>
+    </div>
+  </section>
+
+  <!-- About Section -->
+  <section class="about-section">
+    <div class="about-content">
+      <h2 class="section-title">Why Choose Cookie Server?</h2>
+      
+      <p class="about-text">
+        Cookie Server is designed for professionals who need reliable, efficient, and powerful 
+        Facebook automation tools. Built with modern technology and security in mind, our platform 
+        provides enterprise-grade features with a user-friendly interface. Whether you're managing 
+        social media marketing campaigns or need to automate repetitive tasks, Cookie Server delivers 
+        the performance and reliability you demand.
+      </p>
+      
+      <div class="stats-grid">
+        <div class="stat-box">
+          <div class="stat-number">99.9%</div>
+          <div class="stat-label">Uptime</div>
+        </div>
+        
+        <div class="stat-box">
+          <div class="stat-number">24/7</div>
+          <div class="stat-label">Availability</div>
+        </div>
+        
+        <div class="stat-box">
+          <div class="stat-number">∞</div>
+          <div class="stat-label">Accounts</div>
+        </div>
+        
+        <div class="stat-box">
+          <div class="stat-number">Fast</div>
+          <div class="stat-label">Processing</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Developer Section -->
+  <section class="developer-section">
+    <h2 class="section-title">Meet the Developer</h2>
+    <p class="section-subtitle">Crafted with passion and expertise</p>
+    
+    <div class="developer-card">
+      <div class="developer-avatar">Z</div>
+      <h3 class="developer-name">ZIDDI</h3>
+      <p class="developer-title">Full Stack Developer & Automation Expert</p>
+      <p class="developer-description">
+        With years of experience in social media automation and web development, 
+        ZIDDI has created Cookie Server to provide the most reliable and efficient 
+        Facebook automation platform available. Committed to innovation, security, 
+        and delivering exceptional value to users worldwide.
+      </p>
+    </div>
+  </section>
+
+  <!-- Footer -->
+  <footer class="footer">
+    <div class="footer-logo">COOKIE SERVER</div>
+    <p class="footer-text">Premium Facebook Automation Platform</p>
+    
+    <div class="footer-links">
+      <a href="/login" class="footer-link">Login</a>
+      <a href="#features" class="footer-link">Features</a>
+      <a href="#pricing" class="footer-link">Pricing</a>
+    </div>
+    
+    <p class="copyright">© 2024 Cookie Server. Developed by ZIDDI. All rights reserved.</p>
+  </footer>
+</body>
+</html>

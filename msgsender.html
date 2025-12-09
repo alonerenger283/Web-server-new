@@ -1,0 +1,431 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Message Sender - Cookie Server</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Arial, sans-serif; background: #0f0f23; min-height: 100vh; }
+    .header { background: rgba(23, 23, 40, 0.8); backdrop-filter: blur(20px); border-bottom: 1px solid rgba(255, 255, 255, 0.1); padding: 18px 35px; display: flex; justify-content: space-between; align-items: center; position: sticky; top: 0; z-index: 100; }
+    .header h1 { font-size: 26px; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; font-weight: 700; }
+    .header-buttons { display: flex; gap: 12px; }
+    .btn { padding: 11px 22px; border: none; border-radius: 10px; font-size: 14px; font-weight: 600; cursor: pointer; transition: all 0.3s ease; }
+    .btn-primary { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; }
+    .btn-primary:hover { transform: translateY(-2px); box-shadow: 0 6px 20px rgba(102, 126, 234, 0.4); }
+    .btn-danger { background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%); color: white; }
+    .btn-danger:hover { transform: translateY(-2px); box-shadow: 0 6px 20px rgba(245, 87, 108, 0.4); }
+    .btn-success { background: linear-gradient(135deg, #4ade80 0%, #22c55e 100%); color: white; }
+    .btn-success:hover { transform: translateY(-2px); box-shadow: 0 6px 20px rgba(74, 222, 128, 0.4); }
+    .btn-secondary { background: rgba(255, 255, 255, 0.1); color: rgba(255, 255, 255, 0.8); border: 1px solid rgba(255, 255, 255, 0.2); }
+    .btn-secondary:hover { background: rgba(255, 255, 255, 0.15); }
+    .container { max-width: 1500px; margin: 30px auto; padding: 0 25px; }
+    .chats-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(360px, 1fr)); gap: 22px; margin-bottom: 30px; }
+    .chat-card { background: rgba(23, 23, 40, 0.6); backdrop-filter: blur(20px); border: 1px solid rgba(255, 255, 255, 0.1); border-radius: 16px; padding: 22px; transition: all 0.3s ease; }
+    .chat-card:hover { border-color: rgba(102, 126, 234, 0.4); box-shadow: 0 8px 25px rgba(102, 126, 234, 0.15); }
+    .chat-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px; }
+    .chat-title { font-size: 18px; font-weight: 600; color: #ffffff; }
+    .chat-status { padding: 5px 14px; border-radius: 20px; font-size: 12px; font-weight: 600; }
+    .status-running { background: rgba(74, 222, 128, 0.2); color: #4ade80; border: 1px solid rgba(74, 222, 128, 0.3); }
+    .status-stopped { background: rgba(248, 113, 113, 0.2); color: #f87171; border: 1px solid rgba(248, 113, 113, 0.3); }
+    .chat-info { margin-bottom: 16px; color: rgba(255, 255, 255, 0.7); font-size: 13px; }
+    .chat-info div { margin-bottom: 6px; }
+    .chat-actions { display: flex; gap: 10px; }
+    .chat-actions button { flex: 1; padding: 10px; font-size: 13px; }
+    .modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0, 0, 0, 0.7); z-index: 1000; overflow-y: auto; }
+    .modal-content { background: rgba(23, 23, 40, 0.95); backdrop-filter: blur(30px); border: 1px solid rgba(255, 255, 255, 0.1); max-width: 650px; margin: 50px auto; border-radius: 20px; padding: 35px; }
+    .modal-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 25px; }
+    .modal-header h2 { font-size: 24px; color: #ffffff; }
+    .close-btn { font-size: 32px; cursor: pointer; color: rgba(255, 255, 255, 0.5); transition: color 0.3s; }
+    .close-btn:hover { color: #f5576c; }
+    .form-group { margin-bottom: 22px; }
+    .form-group label { display: block; margin-bottom: 10px; color: rgba(255, 255, 255, 0.8); font-weight: 500; font-size: 14px; }
+    .form-group input, .form-group textarea { width: 100%; padding: 12px 14px; background: rgba(255, 255, 255, 0.05); border: 1px solid rgba(255, 255, 255, 0.1); border-radius: 10px; font-size: 14px; font-family: inherit; color: #ffffff; transition: all 0.3s; }
+    .form-group input:focus, .form-group textarea:focus { outline: none; background: rgba(255, 255, 255, 0.08); border-color: #667eea; }
+    .form-group textarea { resize: vertical; min-height: 110px; }
+    .form-group small { display: block; margin-top: 6px; color: rgba(255, 255, 255, 0.5); font-size: 12px; }
+    .modal-footer { display: flex; gap: 12px; justify-content: flex-end; margin-top: 28px; }
+    .console-section { background: rgba(23, 23, 40, 0.6); backdrop-filter: blur(20px); border: 1px solid rgba(255, 255, 255, 0.1); border-radius: 16px; padding: 22px; }
+    .console-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 18px; gap: 15px; flex-wrap: wrap; }
+    .console-header h2 { font-size: 20px; color: #ffffff; margin: 0; }
+    .console-controls { display: flex; align-items: center; gap: 12px; flex-wrap: wrap; }
+    .chat-filter-buttons { display: flex; gap: 6px; flex-wrap: wrap; }
+    .chat-filter-btn { padding: 7px 14px; border: 1px solid rgba(255, 255, 255, 0.2); background: rgba(255, 255, 255, 0.05); border-radius: 8px; font-size: 13px; font-weight: 600; cursor: pointer; transition: all 0.3s; color: rgba(255, 255, 255, 0.7); }
+    .chat-filter-btn:hover { border-color: #667eea; color: #667eea; background: rgba(102, 126, 234, 0.1); }
+    .chat-filter-btn.active { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; border-color: transparent; }
+    .console-logs { background: rgba(10, 10, 18, 0.8); color: #eee; padding: 18px; border-radius: 12px; font-family: 'Consolas', 'Monaco', monospace; font-size: 13px; max-height: 650px; overflow-y: auto; border: 1px solid rgba(255, 255, 255, 0.05); }
+    .console-log-item { margin-bottom: 14px; padding: 16px; background: rgba(30, 33, 62, 0.6); border-radius: 10px; border-left: 4px solid #4ade80; white-space: pre-line; line-height: 1.7; }
+    .console-log-item.failed { border-left-color: #f87171; background: rgba(40, 30, 30, 0.6); }
+    .console-log-item.info { border-left-color: #60a5fa; background: rgba(30, 42, 62, 0.6); }
+    .log-chatid { color: #34d399; font-weight: bold; }
+    .log-success { color: #4ade80; }
+    .log-error { color: #f87171; }
+    .log-account { color: #a78bfa; }
+    .log-label { color: #94a3b8; }
+    .log-value { color: #f1f5f9; }
+    .confirm-dialog { background: rgba(23, 23, 40, 0.95); backdrop-filter: blur(30px); border: 1px solid rgba(255, 255, 255, 0.1); max-width: 420px; margin: 200px auto; border-radius: 20px; padding: 30px; text-align: center; }
+    .confirm-dialog h3 { margin-bottom: 18px; color: #ffffff; font-size: 22px; }
+    .confirm-dialog p { margin-bottom: 24px; color: rgba(255, 255, 255, 0.7); }
+    .confirm-actions { display: flex; gap: 12px; justify-content: center; }
+    .empty-state { text-align: center; padding: 70px 20px; color: rgba(255, 255, 255, 0.5); }
+    .empty-state h3 { margin-bottom: 12px; color: rgba(255, 255, 255, 0.7); font-size: 20px; }
+    .auto-refresh-toggle { display: flex; align-items: center; gap: 10px; }
+    .auto-refresh-toggle label { font-size: 13px; color: rgba(255, 255, 255, 0.7); cursor: pointer; }
+    .auto-refresh-toggle input { cursor: pointer; }
+  </style>
+</head>
+<body>
+  <div class="header">
+    <h1>📨 Message Sender</h1>
+    <div class="header-buttons">
+      <button class="btn btn-primary" onclick="createNewChat()">Create New Chat</button>
+      <button class="btn btn-secondary" onclick="window.location.href='/dashboard'">← Back</button>
+    </div>
+  </div>
+
+  <div class="container">
+    <div class="chats-grid" id="chatsGrid"></div>
+    
+    <div class="console-section">
+      <div class="console-header">
+        <h2>📋 Console</h2>
+        <div class="console-controls">
+          <div class="chat-filter-buttons" id="chatFilterButtons">
+            <button class="chat-filter-btn active" data-chat="all">All Chats</button>
+          </div>
+          <div class="auto-refresh-toggle">
+            <input type="checkbox" id="autoRefresh">
+            <label for="autoRefresh">Auto Refresh</label>
+          </div>
+          <button class="btn btn-secondary" onclick="refreshLogs()">Refresh</button>
+        </div>
+      </div>
+      <div class="console-logs" id="consoleLogs">
+        <div class="console-log-item info">⏳ Waiting for activity...</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="modal" id="configModal">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h2>Configure Chat</h2>
+        <span class="close-btn" onclick="closeConfigModal()">&times;</span>
+      </div>
+      <form id="configForm">
+        <div class="form-group">
+          <label>Cookies (one per line)</label>
+          <textarea id="cookiesInput" placeholder="Enter cookies, one per line"></textarea>
+          <small>Paste your Facebook account cookies here</small>
+        </div>
+        <div class="form-group">
+          <label>Target ID</label>
+          <input type="text" id="targetIdInput" placeholder="100012345678">
+          <small>The Facebook user or group ID to send messages to</small>
+        </div>
+        <div class="form-group">
+          <label>Messages (one per line)</label>
+          <textarea id="messagesInput" placeholder="Enter messages, one per line"></textarea>
+          <small>Messages will be sent in sequence</small>
+        </div>
+        <div class="form-group">
+          <label>Short Text (Optional)</label>
+          <input type="text" id="shortInput" placeholder="Prefix text">
+          <small>This text will be added before each message</small>
+        </div>
+        <div class="form-group">
+          <label>Timer (seconds)</label>
+          <input type="number" id="timerInput" min="40" value="40">
+          <small>Delay between messages (minimum 40 seconds)</small>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" onclick="closeConfigModal()">Cancel</button>
+          <button type="submit" class="btn btn-success">Save & Start</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <div class="modal" id="deleteModal">
+    <div class="confirm-dialog">
+      <h3>Delete Chat</h3>
+      <p>Are you sure you want to delete this chat? This action cannot be undone.</p>
+      <div class="confirm-actions">
+        <button class="btn btn-secondary" onclick="closeDeleteModal()">Cancel</button>
+        <button class="btn btn-danger" onclick="confirmDelete()">Delete</button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    let currentChatId = null;
+    let deleteTargetChatId = null;
+    let selectedChatFilter = 'all';
+    let allLogEntries = [];
+    let autoRefreshInterval = null;
+
+    async function loadChats() {
+      try {
+        const response = await fetch('/api/chats');
+        const chats = await response.json();
+        const grid = document.getElementById('chatsGrid');
+        grid.innerHTML = '';
+        
+        if (Object.keys(chats).length === 0) {
+          grid.innerHTML = '<div class="empty-state"><h3>No Chats Yet</h3><p>Click "Create New Chat" to get started</p></div>';
+          updateChatFilterButtons([]);
+          return;
+        }
+        
+        for (const [chatId, chat] of Object.entries(chats)) {
+          grid.appendChild(createChatCard(chatId, chat));
+        }
+        updateChatFilterButtons(Object.keys(chats));
+      } catch (e) { console.error('Error loading chats:', e); }
+    }
+
+    function updateChatFilterButtons(chatIds) {
+      const container = document.getElementById('chatFilterButtons');
+      container.innerHTML = '<button class="chat-filter-btn active" data-chat="all" onclick="filterLogs(\'all\')">All Chats</button>';
+      chatIds.forEach(chatId => {
+        const btn = document.createElement('button');
+        btn.className = 'chat-filter-btn';
+        btn.setAttribute('data-chat', chatId);
+        btn.textContent = chatId;
+        btn.onclick = () => filterLogs(chatId);
+        container.appendChild(btn);
+      });
+    }
+
+    function filterLogs(chatId) {
+      selectedChatFilter = chatId;
+      document.querySelectorAll('.chat-filter-btn').forEach(btn => {
+        btn.classList.toggle('active', btn.getAttribute('data-chat') === chatId);
+      });
+      displayFilteredLogs();
+    }
+
+    function formatLogEntry(log) {
+      const isSuccess = log.message.includes('✓');
+      const isFailed = log.message.includes('✗');
+      const isInfo = !isSuccess && !isFailed;
+      
+      let className = 'console-log-item';
+      if (isFailed) className += ' failed';
+      else if (isInfo) className += ' info';
+      
+      const lines = log.message.split('\n');
+      let html = `<span class="log-chatid">[${log.chatId}]</span>\n`;
+      
+      lines.forEach(line => {
+        if (line.startsWith('✓')) {
+          html += `<span class="log-success">${line}</span>\n`;
+        } else if (line.startsWith('✗')) {
+          html += `<span class="log-error">${line}</span>\n`;
+        } else if (line.startsWith('Account:')) {
+          html += `<span class="log-label">Account:</span> <span class="log-account">${line.replace('Account:', '').trim()}</span>\n`;
+        } else {
+          html += `<span class="log-value">${line}</span>\n`;
+        }
+      });
+      
+      return { className, html };
+    }
+
+    function displayFilteredLogs() {
+      const consoleLogs = document.getElementById('consoleLogs');
+      consoleLogs.innerHTML = '';
+      
+      let filteredLogs = selectedChatFilter === 'all' ? allLogEntries : allLogEntries.filter(l => l.chatId === selectedChatFilter);
+      
+      if (filteredLogs.length === 0) {
+        consoleLogs.innerHTML = '<div class="console-log-item info">⏳ No activity yet</div>';
+        return;
+      }
+      
+      filteredLogs.forEach(log => {
+        const { className, html } = formatLogEntry(log);
+        const logItem = document.createElement('div');
+        logItem.className = className;
+        logItem.innerHTML = html;
+        consoleLogs.appendChild(logItem);
+      });
+      
+      consoleLogs.scrollTop = 0;
+    }
+
+    async function refreshLogs() {
+      try {
+        const response = await fetch('/api/chats');
+        const chats = await response.json();
+        allLogEntries = [];
+        
+        for (const chatId of Object.keys(chats)) {
+          try {
+            const logResponse = await fetch(`/api/chats/${chatId}/logs`);
+            const logData = await logResponse.json();
+            if (logData.logs?.length > 0) {
+              logData.logs.forEach(log => {
+                allLogEntries.push({
+                  ...log,
+                  chatId: log.chatId || chatId,
+                  timestamp: new Date(log.time).getTime()
+                });
+              });
+            }
+          } catch (e) { console.error(`Error fetching logs for ${chatId}:`, e); }
+        }
+        
+        allLogEntries.sort((a, b) => b.timestamp - a.timestamp);
+        displayFilteredLogs();
+      } catch (e) { console.error('Error refreshing logs:', e); }
+    }
+
+    function createChatCard(chatId, chat) {
+      const card = document.createElement('div');
+      card.className = 'chat-card';
+      const statusClass = chat.running ? 'status-running' : 'status-stopped';
+      const statusText = chat.running ? 'Running' : 'Stopped';
+      
+      card.innerHTML = `
+        <div class="chat-header">
+          <div class="chat-title">${chatId}</div>
+          <div class="chat-status ${statusClass}">${statusText}</div>
+        </div>
+        <div class="chat-info">
+          <div>Accounts: ${chat.cookies.length}</div>
+          <div>Messages: ${chat.messages.length}</div>
+          <div>Timer: ${chat.timer}s</div>
+          <div>Target: ${chat.targetid || 'Not set'}</div>
+        </div>
+        <div class="chat-actions">
+          ${chat.running 
+            ? `<button class="btn btn-danger" onclick="stopChat('${chatId}')">Stop</button>`
+            : `<button class="btn btn-success" onclick="startChat('${chatId}')">Start</button>`}
+          <button class="btn btn-primary" onclick="configureChat('${chatId}')">Configure</button>
+          <button class="btn btn-danger" onclick="showDeleteConfirm('${chatId}')">Delete</button>
+        </div>`;
+      return card;
+    }
+
+    async function createNewChat() {
+      try {
+        const response = await fetch('/api/chats/create', { method: 'POST' });
+        const data = await response.json();
+        if (data.success) {
+          await loadChats();
+          configureChat(data.chatId);
+        }
+      } catch (e) { console.error('Error creating chat:', e); }
+    }
+
+    async function configureChat(chatId) {
+      currentChatId = chatId;
+      try {
+        const response = await fetch('/api/chats');
+        const chats = await response.json();
+        const chat = chats[chatId];
+        
+        if (chat) {
+          document.getElementById('cookiesInput').value = chat.cookies.join('\n');
+          document.getElementById('targetIdInput').value = chat.targetid;
+          document.getElementById('messagesInput').value = chat.messages.join('\n');
+          document.getElementById('shortInput').value = chat.short;
+          document.getElementById('timerInput').value = chat.timer;
+        }
+        document.getElementById('configModal').style.display = 'block';
+      } catch (e) { console.error('Error loading chat config:', e); }
+    }
+
+    document.getElementById('configForm').addEventListener('submit', async (e) => {
+      e.preventDefault();
+      
+      const cookies = document.getElementById('cookiesInput').value.split('\n').map(c => c.trim()).filter(c => c);
+      const targetid = document.getElementById('targetIdInput').value.trim();
+      const messages = document.getElementById('messagesInput').value.split('\n').map(m => m.trim()).filter(m => m);
+      const short = document.getElementById('shortInput').value.trim();
+      const timer = Math.max(40, parseInt(document.getElementById('timerInput').value) || 40);
+      
+      try {
+        const response = await fetch(`/api/chats/${currentChatId}/configure`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ cookies, targetid, messages, short, timer })
+        });
+        
+        const data = await response.json();
+        if (data.success) {
+          closeConfigModal();
+          await fetch(`/api/chats/${currentChatId}/start`, { method: 'POST' });
+          await loadChats();
+          refreshLogs();
+        }
+      } catch (e) { console.error('Error saving config:', e); }
+    });
+
+    async function startChat(chatId) {
+      try {
+        await fetch(`/api/chats/${chatId}/start`, { method: 'POST' });
+        await loadChats();
+        refreshLogs();
+      } catch (e) { console.error('Error starting chat:', e); }
+    }
+
+    async function stopChat(chatId) {
+      try {
+        await fetch(`/api/chats/${chatId}/stop`, { method: 'POST' });
+        await loadChats();
+      } catch (e) { console.error('Error stopping chat:', e); }
+    }
+
+    function showDeleteConfirm(chatId) {
+      deleteTargetChatId = chatId;
+      document.getElementById('deleteModal').style.display = 'block';
+    }
+
+    async function confirmDelete() {
+      if (!deleteTargetChatId) return;
+      try {
+        await fetch(`/api/chats/${deleteTargetChatId}`, { method: 'DELETE' });
+        closeDeleteModal();
+        await loadChats();
+      } catch (e) { console.error('Error deleting chat:', e); }
+    }
+
+    function closeConfigModal() {
+      document.getElementById('configModal').style.display = 'none';
+      currentChatId = null;
+    }
+
+    function closeDeleteModal() {
+      document.getElementById('deleteModal').style.display = 'none';
+      deleteTargetChatId = null;
+    }
+
+    function setupAutoRefresh() {
+      const checkbox = document.getElementById('autoRefresh');
+      if (checkbox.checked) {
+        autoRefreshInterval = setInterval(() => {
+          refreshLogs();
+          loadChats();
+        }, 30000);
+      }
+      
+      checkbox.addEventListener('change', () => {
+        if (checkbox.checked) {
+          autoRefreshInterval = setInterval(() => {
+            refreshLogs();
+            loadChats();
+          }, 30000);
+        } else {
+          clearInterval(autoRefreshInterval);
+        }
+      });
+    }
+
+    loadChats();
+    refreshLogs();
+    setupAutoRefresh();
+  </script>
+</body>
+</html>

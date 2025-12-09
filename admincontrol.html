@@ -1,0 +1,350 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Admin Control Panel</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Arial, sans-serif; background: #0f0f23; min-height: 100vh; }
+    .header { background: rgba(23, 23, 40, 0.8); backdrop-filter: blur(20px); border-bottom: 1px solid rgba(255, 255, 255, 0.1); color: white; padding: 20px 40px; display: flex; justify-content: space-between; align-items: center; position: sticky; top: 0; z-index: 100; }
+    .header-left { display: flex; align-items: center; gap: 15px; }
+    .logout-btn { background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%); color: white; border: none; padding: 11px 22px; border-radius: 10px; cursor: pointer; font-weight: 600; transition: all 0.3s ease; }
+    .logout-btn:hover { transform: translateY(-2px); box-shadow: 0 6px 20px rgba(245, 87, 108, 0.4); }
+    .header-center h1 { font-size: 28px; text-align: center; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; font-weight: 700; }
+    .header-right { width: 100px; }
+    .container { max-width: 1300px; margin: 40px auto; padding: 0 25px; }
+    .control-section { background: rgba(23, 23, 40, 0.6); backdrop-filter: blur(20px); border: 1px solid rgba(255, 255, 255, 0.1); border-radius: 16px; padding: 32px; margin-bottom: 30px; }
+    .section-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 28px; padding-bottom: 18px; border-bottom: 1px solid rgba(255, 255, 255, 0.1); }
+    .section-title { font-size: 24px; color: #ffffff; font-weight: 600; }
+    .btn-create { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; border: none; padding: 13px 26px; border-radius: 10px; cursor: pointer; font-weight: 600; transition: all 0.3s ease; }
+    .btn-create:hover { transform: translateY(-2px); box-shadow: 0 6px 20px rgba(102, 126, 234, 0.4); }
+    .users-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(360px, 1fr)); gap: 22px; }
+    .user-card { background: rgba(30, 33, 62, 0.4); border: 1px solid rgba(255, 255, 255, 0.1); border-radius: 14px; padding: 22px; transition: all 0.3s; }
+    .user-card:hover { border-color: rgba(102, 126, 234, 0.4); box-shadow: 0 8px 25px rgba(102, 126, 234, 0.15); }
+    .user-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px; }
+    .user-name { font-size: 18px; font-weight: 600; color: #ffffff; }
+    .user-password { margin-bottom: 16px; }
+    .password-label { font-size: 13px; color: rgba(255, 255, 255, 0.6); margin-bottom: 6px; }
+    .password-display { display: flex; align-items: center; gap: 10px; }
+    .password-text { font-family: 'Consolas', monospace; padding: 10px 12px; background: rgba(255, 255, 255, 0.05); border: 1px solid rgba(255, 255, 255, 0.1); border-radius: 8px; flex: 1; font-size: 14px; color: rgba(255, 255, 255, 0.8); }
+    .btn-show { background: rgba(255, 255, 255, 0.1); color: rgba(255, 255, 255, 0.8); border: 1px solid rgba(255, 255, 255, 0.2); padding: 10px 18px; border-radius: 8px; cursor: pointer; font-size: 13px; transition: all 0.3s; font-weight: 600; }
+    .btn-show:hover { background: rgba(255, 255, 255, 0.15); }
+    .user-actions { display: flex; gap: 10px; }
+    .btn-edit, .btn-delete { flex: 1; padding: 11px; border: none; border-radius: 10px; cursor: pointer; font-weight: 600; transition: all 0.3s; }
+    .btn-edit { background: linear-gradient(135deg, #60a5fa 0%, #3b82f6 100%); color: white; }
+    .btn-edit:hover { transform: translateY(-2px); box-shadow: 0 6px 20px rgba(96, 165, 250, 0.4); }
+    .btn-delete { background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%); color: white; }
+    .btn-delete:hover { transform: translateY(-2px); box-shadow: 0 6px 20px rgba(245, 87, 108, 0.4); }
+    .modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0, 0, 0, 0.7); z-index: 1000; }
+    .modal-content { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); background: rgba(23, 23, 40, 0.95); backdrop-filter: blur(30px); border: 1px solid rgba(255, 255, 255, 0.1); border-radius: 20px; padding: 35px; width: 90%; max-width: 520px; box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5); }
+    .modal-header { font-size: 24px; font-weight: 600; margin-bottom: 25px; color: #ffffff; }
+    .form-group { margin-bottom: 22px; }
+    .form-group label { display: block; margin-bottom: 10px; color: rgba(255, 255, 255, 0.8); font-weight: 500; font-size: 14px; }
+    .form-group input { width: 100%; padding: 14px; background: rgba(255, 255, 255, 0.05); border: 1px solid rgba(255, 255, 255, 0.1); border-radius: 10px; font-size: 14px; color: #ffffff; transition: all 0.3s; }
+    .form-group input::placeholder { color: rgba(255, 255, 255, 0.3); }
+    .form-group input:focus { outline: none; background: rgba(255, 255, 255, 0.08); border-color: #667eea; }
+    .form-group input:read-only { background: rgba(255, 255, 255, 0.02); }
+    .modal-actions { display: flex; gap: 12px; margin-top: 28px; }
+    .btn-modal { flex: 1; padding: 14px; border: none; border-radius: 10px; cursor: pointer; font-weight: 600; transition: all 0.3s; }
+    .btn-confirm { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; }
+    .btn-confirm:hover { transform: translateY(-2px); box-shadow: 0 6px 20px rgba(102, 126, 234, 0.4); }
+    .btn-cancel { background: rgba(255, 255, 255, 0.1); color: rgba(255, 255, 255, 0.8); border: 1px solid rgba(255, 255, 255, 0.2); }
+    .btn-cancel:hover { background: rgba(255, 255, 255, 0.15); }
+    .delete-warning { background: rgba(245, 87, 108, 0.1); border: 1px solid rgba(245, 87, 108, 0.3); border-radius: 10px; padding: 16px; margin-bottom: 22px; }
+    .delete-warning p { color: #ff6b6b; font-size: 14px; line-height: 1.6; }
+    .delete-warning ul { margin-top: 10px; margin-left: 20px; color: #ff6b6b; }
+    .empty-state { text-align: center; padding: 70px 20px; color: rgba(255, 255, 255, 0.5); }
+    .empty-state-icon { font-size: 64px; margin-bottom: 16px; }
+    .loading { text-align: center; padding: 50px; }
+    .loading-spinner { border: 4px solid rgba(255, 255, 255, 0.1); border-top: 4px solid #667eea; border-radius: 50%; width: 50px; height: 50px; animation: spin 1s linear infinite; margin: 0 auto; }
+    @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+  </style>
+</head>
+<body>
+  <div class="header">
+    <div class="header-left">
+      <button class="logout-btn" onclick="logout()">🚪 Logout</button>
+    </div>
+    <div class="header-center">
+      <h1>🛡️ Admin Panel</h1>
+    </div>
+    <div class="header-right"></div>
+  </div>
+
+  <div class="container">
+    <div class="control-section">
+      <div class="section-header">
+        <h2 class="section-title">User Management</h2>
+        <button class="btn-create" onclick="openCreateModal()">➕ Create New User</button>
+      </div>
+      
+      <div id="usersContainer">
+        <div class="loading">
+          <div class="loading-spinner"></div>
+          <p style="margin-top: 15px; color: rgba(255, 255, 255, 0.6);">Loading users...</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div id="createModal" class="modal">
+    <div class="modal-content">
+      <h3 class="modal-header">Create New User</h3>
+      <form id="createForm">
+        <div class="form-group">
+          <label>Username</label>
+          <input type="text" id="createUsername" required placeholder="Enter username">
+        </div>
+        <div class="form-group">
+          <label>Password</label>
+          <input type="text" id="createPassword" required placeholder="Enter password">
+        </div>
+        <div class="modal-actions">
+          <button type="submit" class="btn-modal btn-confirm">Create User</button>
+          <button type="button" class="btn-modal btn-cancel" onclick="closeCreateModal()">Cancel</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <div id="editModal" class="modal">
+    <div class="modal-content">
+      <h3 class="modal-header">Edit User Password</h3>
+      <form id="editForm">
+        <div class="form-group">
+          <label>Username</label>
+          <input type="text" id="editUsername" readonly>
+        </div>
+        <div class="form-group">
+          <label>New Password</label>
+          <input type="text" id="editPassword" required placeholder="Enter new password">
+        </div>
+        <div class="modal-actions">
+          <button type="submit" class="btn-modal btn-confirm">Update Password</button>
+          <button type="button" class="btn-modal btn-cancel" onclick="closeEditModal()">Cancel</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <div id="deleteModal" class="modal">
+    <div class="modal-content">
+      <h3 class="modal-header">Delete User</h3>
+      <div class="delete-warning">
+        <p><strong>⚠️ Warning:</strong> This action cannot be undone.</p>
+        <p style="margin-top: 8px;">Deleting this user will:</p>
+        <ul style="margin-top: 8px; margin-left: 20px;">
+          <li>Stop all running chats for this user</li>
+          <li>Prevent the user from logging in</li>
+          <li>Remove all user access permanently</li>
+        </ul>
+      </div>
+      <p style="font-size: 16px; margin-bottom: 22px; color: rgba(255, 255, 255, 0.8);">Are you sure you want to delete user: <strong id="deleteUsername" style="color: #ffffff;"></strong>?</p>
+      <div class="modal-actions">
+        <button class="btn-modal btn-confirm" style="background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);" onclick="confirmDelete()">Yes, Delete User</button>
+        <button class="btn-modal btn-cancel" onclick="closeDeleteModal()">Cancel</button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    let users = {};
+    let currentEditUser = '';
+    let currentDeleteUser = '';
+
+    async function loadUsers() {
+      try {
+        const response = await fetch('/api/admin/users');
+        const data = await response.json();
+        
+        if (data.success) {
+          users = data.users;
+          renderUsers();
+        } else {
+          document.getElementById('usersContainer').innerHTML = '<div class="empty-state"><div class="empty-state-icon">⚠️</div><p>Failed to load users</p></div>';
+        }
+      } catch (error) {
+        document.getElementById('usersContainer').innerHTML = '<div class="empty-state"><div class="empty-state-icon">❌</div><p>Error loading users</p></div>';
+      }
+    }
+
+    function renderUsers() {
+      const container = document.getElementById('usersContainer');
+      const usernames = Object.keys(users);
+
+      if (usernames.length === 0) {
+        container.innerHTML = '<div class="empty-state"><div class="empty-state-icon">👥</div><p>No users found. Create your first user!</p></div>';
+        return;
+      }
+
+      container.innerHTML = '<div class="users-grid">' + usernames.map(username => `
+        <div class="user-card">
+          <div class="user-header">
+            <div class="user-name">👤 ${escapeHtml(username)}</div>
+          </div>
+          <div class="user-password">
+            <div class="password-label">Password:</div>
+            <div class="password-display">
+              <div class="password-text" id="pass-${escapeHtml(username)}">••••••••</div>
+              <button class="btn-show" onclick="togglePassword('${escapeHtml(username)}')">Show</button>
+            </div>
+          </div>
+          <div class="user-actions">
+            <button class="btn-edit" onclick="openEditModal('${escapeHtml(username)}')">✏️ Edit</button>
+            <button class="btn-delete" onclick="openDeleteModal('${escapeHtml(username)}')">🗑️ Delete</button>
+          </div>
+        </div>
+      `).join('') + '</div>';
+    }
+
+    function togglePassword(username) {
+      const passEl = document.getElementById(`pass-${username}`);
+      const btn = passEl.nextElementSibling;
+      
+      if (passEl.textContent === '••••••••') {
+        passEl.textContent = users[username];
+        btn.textContent = 'Hide';
+      } else {
+        passEl.textContent = '••••••••';
+        btn.textContent = 'Show';
+      }
+    }
+
+    function openCreateModal() {
+      document.getElementById('createModal').style.display = 'block';
+      document.getElementById('createUsername').value = '';
+      document.getElementById('createPassword').value = '';
+    }
+
+    function closeCreateModal() {
+      document.getElementById('createModal').style.display = 'none';
+    }
+
+    function openEditModal(username) {
+      currentEditUser = username;
+      document.getElementById('editUsername').value = username;
+      document.getElementById('editPassword').value = users[username];
+      document.getElementById('editModal').style.display = 'block';
+    }
+
+    function closeEditModal() {
+      document.getElementById('editModal').style.display = 'none';
+      currentEditUser = '';
+    }
+
+    function openDeleteModal(username) {
+      currentDeleteUser = username;
+      document.getElementById('deleteUsername').textContent = username;
+      document.getElementById('deleteModal').style.display = 'block';
+    }
+
+    function closeDeleteModal() {
+      document.getElementById('deleteModal').style.display = 'none';
+      currentDeleteUser = '';
+    }
+
+    document.getElementById('createForm').addEventListener('submit', async (e) => {
+      e.preventDefault();
+      
+      const username = document.getElementById('createUsername').value.trim();
+      const password = document.getElementById('createPassword').value;
+
+      if (!username || !password) {
+        alert('Please enter both username and password');
+        return;
+      }
+
+      try {
+        const response = await fetch('/api/admin/users/create', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ username, password })
+        });
+
+        const data = await response.json();
+
+        if (data.success) {
+          closeCreateModal();
+          loadUsers();
+          alert('User created successfully!');
+        } else {
+          alert(data.message || 'Failed to create user');
+        }
+      } catch (error) {
+        alert('Error creating user');
+      }
+    });
+
+    document.getElementById('editForm').addEventListener('submit', async (e) => {
+      e.preventDefault();
+      
+      const password = document.getElementById('editPassword').value;
+
+      if (!password) {
+        alert('Please enter a password');
+        return;
+      }
+
+      try {
+        const response = await fetch('/api/admin/users/update', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ username: currentEditUser, password })
+        });
+
+        const data = await response.json();
+
+        if (data.success) {
+          closeEditModal();
+          loadUsers();
+          alert('Password updated successfully!');
+        } else {
+          alert(data.message || 'Failed to update password');
+        }
+      } catch (error) {
+        alert('Error updating password');
+      }
+    });
+
+    async function confirmDelete() {
+      try {
+        const response = await fetch('/api/admin/users/delete', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ username: currentDeleteUser })
+        });
+
+        const data = await response.json();
+
+        if (data.success) {
+          closeDeleteModal();
+          loadUsers();
+          alert('User deleted successfully!');
+        } else {
+          alert(data.message || 'Failed to delete user');
+        }
+      } catch (error) {
+        alert('Error deleting user');
+      }
+    }
+
+    async function logout() {
+      try {
+        await fetch('/api/admin/logout', { method: 'POST' });
+        window.location.href = '/admin/login';
+      } catch (error) {
+        window.location.href = '/admin/login';
+      }
+    }
+
+    function escapeHtml(text) {
+      const div = document.createElement('div');
+      div.textContent = text;
+      return div.innerHTML;
+    }
+
+    loadUsers();
+  </script>
+</body>
+</html>

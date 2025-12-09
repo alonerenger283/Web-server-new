@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>UID Fetcher - Cookie Server</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Arial, sans-serif; background: #0f0f23; min-height: 100vh; }
+    .header { background: rgba(23, 23, 40, 0.8); backdrop-filter: blur(20px); border-bottom: 1px solid rgba(255, 255, 255, 0.1); padding: 18px 35px; display: flex; justify-content: space-between; align-items: center; position: sticky; top: 0; z-index: 100; }
+    .header h1 { font-size: 26px; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; font-weight: 700; }
+    .btn { padding: 11px 22px; border: none; border-radius: 10px; font-size: 14px; font-weight: 600; cursor: pointer; transition: all 0.3s ease; }
+    .btn-primary { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; }
+    .btn-primary:hover { transform: translateY(-2px); box-shadow: 0 6px 20px rgba(102, 126, 234, 0.4); }
+    .btn-success { background: linear-gradient(135deg, #4ade80 0%, #22c55e 100%); color: white; }
+    .btn-success:hover { transform: translateY(-2px); box-shadow: 0 6px 20px rgba(74, 222, 128, 0.4); }
+    .container { max-width: 1300px; margin: 30px auto; padding: 0 25px; }
+    .card { background: rgba(23, 23, 40, 0.6); backdrop-filter: blur(20px); border: 1px solid rgba(255, 255, 255, 0.1); border-radius: 16px; padding: 28px; margin-bottom: 25px; }
+    .card h2 { color: #ffffff; font-size: 22px; margin-bottom: 18px; font-weight: 600; }
+    .form-group { margin-bottom: 22px; }
+    .form-group label { display: block; margin-bottom: 10px; color: rgba(255, 255, 255, 0.8); font-weight: 500; font-size: 14px; }
+    input, textarea { width: 100%; padding: 14px; background: rgba(255, 255, 255, 0.05); border: 1px solid rgba(255, 255, 255, 0.1); border-radius: 12px; font-size: 14px; color: #ffffff; transition: all 0.3s; }
+    input::placeholder, textarea::placeholder { color: rgba(255, 255, 255, 0.3); }
+    input:focus, textarea:focus { outline: none; background: rgba(255, 255, 255, 0.08); border-color: #667eea; }
+    textarea { font-family: 'Consolas', monospace; resize: vertical; min-height: 110px; }
+    input[type="number"] { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Arial, sans-serif; }
+    .actions { display: flex; gap: 12px; margin-top: 18px; }
+    .status { text-align: center; padding: 16px; background: rgba(96, 165, 250, 0.1); border: 1px solid rgba(96, 165, 250, 0.2); border-radius: 12px; color: #60a5fa; font-weight: 600; margin-top: 18px; }
+    .results-section { display: none; }
+    .thread-item { padding: 18px; background: rgba(30, 33, 62, 0.4); border-left: 4px solid; border-left-color: #667eea; border-radius: 12px; margin-bottom: 14px; transition: all 0.3s; }
+    .thread-item:hover { background: rgba(30, 33, 62, 0.6); border-left-color: #764ba2; }
+    .thread-name { font-weight: 600; color: #ffffff; margin-bottom: 10px; font-size: 16px; }
+    .thread-id { color: rgba(255, 255, 255, 0.7); font-family: 'Consolas', monospace; font-size: 13px; word-break: break-all; cursor: pointer; user-select: all; background: rgba(10, 10, 18, 0.6); padding: 10px; border-radius: 8px; margin-top: 6px; border: 1px solid rgba(255, 255, 255, 0.1); }
+    .thread-number { display: inline-block; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; padding: 3px 10px; border-radius: 6px; font-size: 12px; margin-right: 10px; font-weight: 600; }
+    @media (max-width: 768px) {
+      .header { flex-direction: column; gap: 15px; padding: 18px 20px; }
+      .actions { flex-direction: column; }
+      .btn { width: 100%; }
+    }
+  </style>
+</head>
+<body>
+  <div class="header">
+    <h1>👤 UID Fetcher</h1>
+    <button class="btn btn-primary" onclick="window.location.href='/dashboard'">← Back to Dashboard</button>
+  </div>
+
+  <div class="container">
+    <div class="card">
+      <h2>Fetch Thread UIDs</h2>
+      
+      <div class="form-group">
+        <label>Facebook Cookie (Single Account)</label>
+        <textarea id="cookieInput" placeholder="Paste your Facebook cookie here..."></textarea>
+      </div>
+
+      <div class="form-group">
+        <label>Number of Threads to Fetch</label>
+        <input type="number" id="limitInput" value="20" min="1" max="100">
+      </div>
+
+      <div class="actions">
+        <button class="btn btn-success" onclick="fetchThreads()">Fetch Threads</button>
+      </div>
+
+      <div id="status" class="status" style="display: none;"></div>
+    </div>
+
+    <div class="results-section" id="resultsSection">
+      <div class="card">
+        <h2>Fetched Threads</h2>
+        <div id="threadsContainer"></div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    let isFetching = false;
+
+    async function fetchThreads() {
+      if (isFetching) return;
+
+      const cookie = document.getElementById('cookieInput').value.trim();
+      const limit = parseInt(document.getElementById('limitInput').value) || 20;
+
+      if (!cookie) {
+        alert('Please enter a Facebook cookie');
+        return;
+      }
+
+      if (limit < 1 || limit > 100) {
+        alert('Please enter a number between 1 and 100');
+        return;
+      }
+
+      isFetching = true;
+      const statusDiv = document.getElementById('status');
+      const resultsSection = document.getElementById('resultsSection');
+      
+      statusDiv.style.display = 'block';
+      statusDiv.textContent = 'Fetching threads...';
+      resultsSection.style.display = 'none';
+
+      try {
+        const response = await fetch('/api/tools/fetch-threads', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ cookie, limit })
+        });
+
+        const data = await response.json();
+        
+        if (data.success) {
+          displayThreads(data.threads);
+        } else {
+          statusDiv.textContent = 'Error: ' + data.message;
+        }
+      } catch (e) {
+        statusDiv.textContent = 'Error fetching threads: ' + e.message;
+      } finally {
+        isFetching = false;
+      }
+    }
+
+    function displayThreads(threads) {
+      const statusDiv = document.getElementById('status');
+      const resultsSection = document.getElementById('resultsSection');
+      const container = document.getElementById('threadsContainer');
+
+      statusDiv.style.display = 'none';
+      resultsSection.style.display = 'block';
+
+      if (threads.length === 0) {
+        container.innerHTML = '<p style="color: rgba(255, 255, 255, 0.4); text-align: center; padding: 35px;">No threads found</p>';
+        return;
+      }
+
+      container.innerHTML = threads.map((thread, index) => `
+        <div class="thread-item">
+          <div class="thread-name">
+            <span class="thread-number">#${index + 1}</span>
+            ${thread.name}
+          </div>
+          <div class="thread-id">${thread.threadID}</div>
+        </div>
+      `).join('');
+    }
+  </script>
+</body>
+</html>
